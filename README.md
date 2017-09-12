@@ -84,9 +84,9 @@ Additionally, we have:
 * prune [default=True]
   - if true, then subtrees that do not lead to a decrease of the objective function are pruned out.
   - range: [True,False]
-* verbose [default=True]
-  - if true, then subtrees that do not lead to a decrease of the objective function are pruned out.
-  - range: [True,False]
+* verbose [default=0]
+  - the verbosity: 0 is for the least verbose mode.
+  - range: [0,+∞]
 
 ## Tests
 Several tests can be run:
