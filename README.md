@@ -28,10 +28,14 @@ Suppose `train_X` (a numpy array) and `train_Y` (a numpy vector) are the trainin
 
 ```python
 reg = linxgb(n_estimators=3)
-reg.fit(train_X, train_Y)```
+reg.fit(train_X, train_Y)
+```
+
 For the predictions, it is as simple as:
+
 ```python
-pred_Y = reg.predict(test_X)```
+pred_Y = reg.predict(test_X)
+```
 
 ## Parameters
 Most significant parameters comply with
