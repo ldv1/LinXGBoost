@@ -68,11 +68,22 @@ class linxgb:
             raise ValueError("gamma must be greater than 0 but "
                              "was %r" % self.gamma)
 
-    def predict(self, X):
+    def _predict(self, X):
         n = X.shape[0]
         y = np.zeros(n, dtype=float)
         for tree in self.trees:
             y += self.learning_rate*tree.predict(X)
+
+        return y
+
+    def predict(self, X):
+        n = X.shape[0]
+        y = np.zeros(n, dtype=float)
+        if not self.trees:
+            return y
+        for t in range(len(self.trees)-1):
+            y += self.learning_rate*self.trees[t].predict(X)
+        y += self.trees[-1].predict(X)
 
         return y
 
@@ -92,7 +103,7 @@ class linxgb:
 
     def objective(self,X, y, y_hat=None):
         if y_hat is None:
-            y_hat = self.predict(X)
+            y_hat = self._predict(X)
         return self.loss(y,y_hat)+self.regularization()
 
     def build_tree(self, tree, X, g, h):
@@ -159,7 +170,7 @@ class linxgb:
             n = X.shape[0]
             batch_size = int(np.rint(self.subsample*n))
             indices = np.random.choice(n, batch_size, replace=False)
-            y_hat = self.predict(X[indices,:])
+            y_hat = self._predict(X[indices,:])
             g, h = self.dloss(X[indices,:],y[indices],y_hat)
             if self.verbose > 0:
                 print( "building tree {}, total obj={}".format(t+1,np.sum(self.tree_objs)) )
