@@ -62,7 +62,7 @@ class node:
     def regularization(self, gamma=0., lbda=0.):
         if self.is_leaf():
             if np.isscalar(self.w):
-                #w2 = self.w*self.w
+                # in that case, lambda was set to 0 (no penalty for the bias)
                 w2 = 0.
             else:
                 w2 = np.dot(self.w,self.w)
@@ -78,7 +78,7 @@ class node:
             else:
                 return np.dot(np.c_[X,np.ones(shape=(n,1), dtype=float)],self.w)
         else:
-            assert self.split_feature > -1, "split feature must be > 0!"
+            assert self.split_feature > -1, "split feature must be > -1!"
             y = np.zeros(n, dtype=float)
             c = ( X[:,self.split_feature] < self.split_value )
             y[c]            = self.left.predict(X[c,:])
@@ -140,6 +140,9 @@ class node:
             Lambda = lbda*np.eye(d+1)
             Lambda[d,d] = 0.
             C = H_tilde+Lambda
+            cond = np.linalg.cond(C)
+            if cond > 1e12:
+                return self.get_weight(X, g, h, lbda, linear_model=False)
             try:
                 L = np.linalg.cholesky(C)
             except:
