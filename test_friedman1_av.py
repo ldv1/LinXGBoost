@@ -37,12 +37,13 @@ def compute(train_X,train_Y,test_X,test_Y):
     xgb_pred_Y = reg.predict(test_X)
 
     # CV for LinXGBoost
-    param_grid = { "learning_rate": np.linspace(0.7,0.8,num=2), # 0.8
+    param_grid = { "learning_rate": [0.6, 0.7, 0.8], # 0.8
                    "gamma": [ 1, 3, 10 ], # 3 or 10
-                   "lbda": np.logspace(-3,-1,num=3), # -2
-                   "min_samples_leaf": np.arange(30,56,5), #50
+                   #"lbda": np.logspace(-3,-1,num=3), # -2
+                   "min_samples_leaf": np.arange(40,61,5), #50
+                   "n_estimators": [2,3]
                   }
-    grid_cv = GridSearchCV(linxgb(n_estimators=3, max_depth=500), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
+    grid_cv = GridSearchCV(linxgb(max_depth=500, lbda=0.), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
     grid_cv.fit(train_X, train_Y)
     reg = grid_cv.best_estimator_
     reg.fit(train_X, train_Y)
@@ -68,16 +69,15 @@ if __name__ == '__main__':
     # read data file_name
     data = np.genfromtxt('fried_delve.data', delimiter = ' ')
     ndata, nfeatures = data.shape
-    print "read {} samples, {} features".format(ndata,nfeatures)
+    print("read {} samples, {} features".format(ndata,nfeatures))
 
     # predictions
-
     xgb_perf = []
     lin_perf = []
     rf_perf = []
 
     for k in range(0,20):
-        print "starting {}-th iteration".format(k+1)
+        print("starting {}-th iteration".format(k+1))
 
         np.random.seed(k)
 
@@ -100,10 +100,10 @@ if __name__ == '__main__':
         rf_perf.append(rf_nmse)
 
         # print perf
-        print "NMSE: XGBoost {:12.5f} LinXGBoost {:12.5f} Random Forests {:12.5f}". \
-               format(xgb_nmse,lin_nmse,rf_nmse)
+        print("NMSE: XGBoost {:12.5f} LinXGBoost {:12.5f} Random Forests {:12.5f}". \
+               format(xgb_nmse,lin_nmse,rf_nmse) )
 
     # Print stats
-    print "XGBoost       : {:12.5f} +/- {:12.5f}".format(np.mean(xgb_perf),np.std(xgb_perf,ddof=1))
-    print "LinXGBoost    : {:12.5f} +/- {:12.5f}".format(np.mean(lin_perf),np.std(lin_perf,ddof=1))
-    print "Random Forests: {:12.5f} +/- {:12.5f}".format(np.mean(rf_perf),np.std(rf_perf,ddof=1))
+    print("XGBoost       : {:12.5f} +/- {:12.5f}".format(np.mean(xgb_perf),np.std(xgb_perf,ddof=1)) )
+    print("LinXGBoost    : {:12.5f} +/- {:12.5f}".format(np.mean(lin_perf),np.std(lin_perf,ddof=1)) )
+    print("Random Forests: {:12.5f} +/- {:12.5f}".format(np.mean(rf_perf),np.std(rf_perf,ddof=1)) )
