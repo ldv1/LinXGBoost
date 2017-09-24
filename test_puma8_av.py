@@ -42,7 +42,7 @@ def compute(train_X,train_Y,test_X,test_Y):
     #reg = grid_cv.best_estimator_
     #reg.fit(train_X, train_Y)
     xgb_pred_Y = grid_cv.predict(test_X)
-    
+
     # CV for LinXGBoost
     param_grid = { "learning_rate": [0.4,0.5], # 0.8
                    "gamma": [ 1, 30, 100 ], # 3 or 10
@@ -53,7 +53,7 @@ def compute(train_X,train_Y,test_X,test_Y):
     grid_cv.fit(train_X, train_Y)
     #reg = grid_cv.best_estimator_
     #reg.fit(train_X, train_Y)
-    lin_pred_Y = reg.grid_cv(test_X)
+    lin_pred_Y = grid_cv.predict(test_X)
 
     # CV for Random Forest
     param_grid = { "n_estimators": np.arange(80,121,5), # 69 or 78
