@@ -5,7 +5,7 @@ Random Forests:      0.23755 +/-      0.00818
 '''
 
 import time
-from openpyxl import load_workbook
+import pandas as pd
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import ConstantKernel, RBF, WhiteKernel
 from sklearn.metrics import make_scorer, mean_squared_error
@@ -67,11 +67,16 @@ def compute(train_X,train_Y,test_X,test_Y):
 
 if __name__ == '__main__':
 
-    # read data file_name
-    wb = load_workbook('ccpp.xlsx', read_only=True)
-    ws = wb.get_sheet_by_name('Sheet1')
-    data = np.array( [ [r[t].value for t in range(0,4)]  for r in ws.iter_rows(row_offset=1)] )
+    # Read Excel sheets
+    df = pd.read_excel('ccpp.xlsx')
+    multivariate_outliers1 = df[ (df["V"]<30) | (df["PE"]<424) ].index.tolist()
+    multivariate_outliers2 = df[ (df["V"]>70) & (df["V"]<73) & (df["PE"]>450) & (df["PE"]<480) ].index.tolist()
+    multivariate_outliers = multivariate_outliers1 + multivariate_outliers2
+    new_df = df.drop(df.index[multivariate_outliers]).reset_index(drop = True)
+    data = new_df.values
+    print(data.shape)
     features = data[:,:-1]
+    features = features - np.mean(features,axis=0)
     target = data[:,-1]
 
     # predictions
