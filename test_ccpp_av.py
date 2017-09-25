@@ -34,9 +34,9 @@ def compute(train_X,train_Y,test_X,test_Y):
                   }
     grid_cv = GridSearchCV(xgb.XGBRegressor(objective='reg:linear', reg_lambda=0., nthread=1), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
     grid_cv.fit(train_X, train_Y)
-    reg = grid_cv.best_estimator_
-    reg.fit(train_X, train_Y)
-    xgb_pred_Y = reg.predict(test_X)
+    #reg = grid_cv.best_estimator_
+    #reg.fit(train_X, train_Y)
+    xgb_pred_Y = grid_cv.predict(test_X)
 
     # CV for LinXGBoost
     param_grid = { #"learning_rate": [0.6,0.7],
@@ -46,9 +46,9 @@ def compute(train_X,train_Y,test_X,test_Y):
                   }
     grid_cv = GridSearchCV(linxgb(max_depth=200,n_estimators=4,learning_rate=0.6), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
     grid_cv.fit(train_X, train_Y)
-    reg = grid_cv.best_estimator_
-    reg.fit(train_X, train_Y)
-    lin_pred_Y = reg.predict(test_X)
+    #reg = grid_cv.best_estimator_
+    #reg.fit(train_X, train_Y)
+    lin_pred_Y = grid_cv.predict(test_X)
 
     # CV for Random Forest
     param_grid = { "n_estimators": np.arange(1,51,4), # 69 or 78
@@ -58,9 +58,9 @@ def compute(train_X,train_Y,test_X,test_Y):
                   }
     grid_cv = GridSearchCV(RandomForestRegressor(random_state=1), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
     grid_cv.fit(train_X, train_Y)
-    reg = grid_cv.best_estimator_
-    reg.fit(train_X, train_Y)
-    rf_pred_Y = reg.predict(test_X)
+    #reg = grid_cv.best_estimator_
+    #reg.fit(train_X, train_Y)
+    rf_pred_Y = grid_cv.predict(test_X)
 
     return nmse(test_Y,xgb_pred_Y), nmse(test_Y,lin_pred_Y), nmse(test_Y,rf_pred_Y)
 
