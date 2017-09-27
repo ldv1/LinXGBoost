@@ -14,7 +14,8 @@ You will need python 3 with
 [numpy](http://www.numpy.org/).
 If you intend to run the tests, then
 [sklearn](http://scikit-learn.org/stable/),
-[matplotlib](https://matplotlib.org/), [XGBoost](https://github.com/dmlc/xgboost) and [openpyxl](https://openpyxl.readthedocs.io/en/default/) must be installed.
+[matplotlib](https://matplotlib.org/), [XGBoost](https://github.com/dmlc/xgboost)
+and [pandas](http://pandas.pydata.org/) must be installed.
 
 ## Code
 The class `linxgb` is, without surprise defined, in `linxgb.py`.
