@@ -140,7 +140,12 @@ class node:
             Lambda = lbda*np.eye(d+1)
             Lambda[d,d] = 0.
             C = H_tilde+Lambda
-            cond = np.linalg.cond(C)
+            with np.errstate(divide='raise'):
+                try:
+                    cond = np.linalg.cond(C)
+                except:
+                    return self.get_weight(X, g, h, lbda, linear_model=False)
+                    raise
             if cond > 1e12:
                 return self.get_weight(X, g, h, lbda, linear_model=False)
             try:
