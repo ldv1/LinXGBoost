@@ -43,12 +43,12 @@ def compute(train_X,train_Y,test_X,test_Y):
     xgb_pred_Y = reg.predict(test_X)
 
     # CV for LinXGBoost
-    param_grid = { "learning_rate": np.linspace(0.6,0.8,num=3), # 0.7, 0.6
-                   "gamma": [ 0.1, 0.3, 1 ], # 0.3, 0.6
-                   "lbda": np.logspace(-4,-2,num=3), # -2, -3
-                   "min_samples_leaf": np.arange(1,4), # 2, 2
+    param_grid = { "learning_rate": [0.4, 0.5, 0.6], # 0.7, 0.6
+                   "gamma": [ 0.3, 1, 3 ], # 0.3, 0.6
+                   #"lbda": np.logspace(-4,-2,num=3), # -2, -3
+                   "min_samples_leaf": [4,6,8], # 2, 2
                   }
-    grid_cv = GridSearchCV(linxgb(max_depth=200,n_estimators=3), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
+    grid_cv = GridSearchCV(linxgb(max_depth=200,n_estimators=5,lbda=0.), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
     grid_cv.fit(train_X, train_Y)
     reg = grid_cv.best_estimator_
     reg.fit(train_X, train_Y)
@@ -88,12 +88,12 @@ if __name__ == '__main__':
     rf_perf = []
 
     for k in range(0,20):
-        print "starting {}-th iteration".format(k+1)
+        print("starting {}-th iteration".format(k+1))
 
         np.random.seed(k)
 
         # Training set on the square
-        n_train_samples = 11
+        n_train_samples = 41
         train_X, train_Y = test_func(reg_func, n_samples=n_train_samples, var=s2)
 
         # predictions
@@ -105,10 +105,10 @@ if __name__ == '__main__':
         rf_perf.append(rf_nmse)
 
         # print perf
-        print "NMSE: XGBoost {:12.5f} LinXGBoost {:12.5f} Random Forests {:12.5f}". \
-               format(xgb_nmse,lin_nmse,rf_nmse)
+        print("NMSE: XGBoost {:12.5f} LinXGBoost {:12.5f} Random Forests {:12.5f}". \
+               format(xgb_nmse,lin_nmse,rf_nmse))
 
     # Print stats
-    print "XGBoost       : {:12.5f} +/- {:12.5f}".format(np.mean(xgb_perf),np.std(xgb_perf,ddof=1))
-    print "LinXGBoost    : {:12.5f} +/- {:12.5f}".format(np.mean(lin_perf),np.std(lin_perf,ddof=1))
-    print "Random Forests: {:12.5f} +/- {:12.5f}".format(np.mean(rf_perf),np.std(rf_perf,ddof=1))
+    print("XGBoost       : {:12.5f} +/- {:12.5f}".format(np.mean(xgb_perf),np.std(xgb_perf,ddof=1)))
+    print("LinXGBoost    : {:12.5f} +/- {:12.5f}".format(np.mean(lin_perf),np.std(lin_perf,ddof=1)))
+    print("Random Forests: {:12.5f} +/- {:12.5f}".format(np.mean(rf_perf),np.std(rf_perf,ddof=1)))
