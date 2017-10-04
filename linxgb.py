@@ -4,7 +4,11 @@ from node import node
 
 def make_quadratic(X):
     assert isinstance(X, np.ndarray), "X must be a numpy ndarray!"
-    return np.c_[ X, X*X ]
+    n = X.shape[1]
+    for p in range(0,n):
+        for q in range(p,n):
+            X = np.c_[ X, X[:,p]*X[:,q] ]
+    return X
 
 class linxgb:
     def __init__(self, loss_func="square_loss", n_estimators=5,
