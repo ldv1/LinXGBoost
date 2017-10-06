@@ -9,7 +9,7 @@ damp_amp = 0.8
 def test_func(name, n_samples, var=0, random_state=None):
     if random_state is not None:
         np.random.seed(random_state)
-    assert name in ["lo1", "linear", "sine", "heavysine","friedman1","square","jakeman1","jakeman4","jakeman4s","jakeman4i","jakeman41s","jakeman41","island"], "unknown test function!"
+    assert name in ["lo1", "linear", "sine", "heavysine","friedman1","square","jakeman1","jakeman4","jakeman4s","jakeman41","jakeman41s","island"], "unknown test function!"
     if name in ["lo1", "linear", "sine", "heavysine"]:
         X = np.linspace(0,1,n_samples)
         if name == "linear":
@@ -46,13 +46,6 @@ def test_func(name, n_samples, var=0, random_state=None):
         y = np.exp(0.5*X1+3*X2)
         y[X1>0.5] = 0.
         y[X2>0.5] = 0.
-    elif name == "jakeman4i":
-        X1,X2 = np.meshgrid(np.linspace(0,1,n_samples),np.linspace(0,1,n_samples))
-        Y = np.exp(-0.5*X1-3*X2)
-        Y[X1>0.5] = 0.
-        Y[X2>0.5] = 0.
-        X = np.c_[X1.ravel(),X2.ravel()]
-        y = Y.ravel()
     elif name == "jakeman41":
         X1,X2 = np.meshgrid(np.linspace(0,1,n_samples),np.linspace(0,1,n_samples))
         Y = 10*np.sin(3*np.pi*X1+np.pi*X2)
@@ -91,7 +84,7 @@ def test_func(name, n_samples, var=0, random_state=None):
     return X,y
 
 def test_func_lineX(name, n_samples):
-    assert name in ["square", "jakeman1", "jakeman4", "jakeman4s", "jakeman4i", "jakeman41", "jakeman41s","island"], "unknown test function!"
+    assert name in ["square", "jakeman1", "jakeman4", "jakeman4s", "jakeman41", "jakeman41s","island"], "unknown test function!"
     if name == "square":
         X = np.linspace(0,1,n_samples)
         y = np.zeros(X.shape)
@@ -104,12 +97,6 @@ def test_func_lineX(name, n_samples):
         X2 = np.linspace(0,1,n_samples)
         X1 = 0.1*np.ones(n_samples)
         y = np.exp(0.5*X1+3*X2)
-        y[X2>0.5] = 0.
-        X = np.c_[X1.ravel(),X2.ravel()]
-    elif name == "jakeman4i" or name == "jakeman4i_ungridded":
-        X2 = np.linspace(0,1,n_samples)
-        X1 = 0.1*np.ones(n_samples)
-        y = np.exp(-0.5*X1-3*X2)
         y[X2>0.5] = 0.
         X = np.c_[X1.ravel(),X2.ravel()]
     elif name == "jakeman41" or name == "jakeman41s":
