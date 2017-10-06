@@ -9,7 +9,7 @@ damp_amp = 0.8
 def test_func(name, n_samples, var=0, random_state=None):
     if random_state is not None:
         np.random.seed(random_state)
-    assert name in ["lo1", "linear", "sine", "heavysine","friedman1","square","jakeman1","jakeman4","jakeman4i","jakeman41s","jakeman41","jakeman4_ungridded","island"], "unknown test function!"
+    assert name in ["lo1", "linear", "sine", "heavysine","friedman1","square","jakeman1","jakeman4","jakeman4s","jakeman4i","jakeman41s","jakeman41","island"], "unknown test function!"
     if name in ["lo1", "linear", "sine", "heavysine"]:
         X = np.linspace(0,1,n_samples)
         if name == "linear":
@@ -39,6 +39,13 @@ def test_func(name, n_samples, var=0, random_state=None):
         Y[X2>0.5] = 0.
         X = np.c_[X1.ravel(),X2.ravel()]
         y = Y.ravel()
+    elif name == "jakeman4s": # random sampling in the unit square
+        X1 = np.random.rand(n_samples*n_samples)
+        X2 = np.random.rand(n_samples*n_samples)
+        X = np.c_[X1,X2]
+        y = np.exp(0.5*X1+3*X2)
+        y[X1>0.5] = 0.
+        y[X2>0.5] = 0.
     elif name == "jakeman4i":
         X1,X2 = np.meshgrid(np.linspace(0,1,n_samples),np.linspace(0,1,n_samples))
         Y = np.exp(-0.5*X1-3*X2)
@@ -69,17 +76,6 @@ def test_func(name, n_samples, var=0, random_state=None):
         Y[C] = np.exp(X1[C]+2*X2[C])
         X = np.c_[X1.ravel(),X2.ravel()]
         y = Y.ravel()
-    elif name == "jakeman4_ungridded":
-        m = np.array([0.5,0.5])
-        v = np.array([ [0.01,0],[0,0.01]])
-        X = np.random.multivariate_normal(m,v,size=n_samples**2)
-        X1 = X[:,0]
-        X2 = X[:,1]
-        Y = np.exp(0.5*X1+3*X2)
-        Y[X1>0.5] = 0.
-        Y[X2>0.5] = 0.
-        X = np.c_[X1.ravel(),X2.ravel()]
-        y = Y.ravel()
     elif name == "island":
         X1,X2 = np.meshgrid(np.linspace(-1,1,n_samples),np.linspace(-1,1,n_samples))
         Y = np.ones(X1.shape)
@@ -95,7 +91,7 @@ def test_func(name, n_samples, var=0, random_state=None):
     return X,y
 
 def test_func_lineX(name, n_samples):
-    assert name in ["square", "jakeman1", "jakeman4", "jakeman4i", "jakeman41", "jakeman41s", "jakeman4_ungridded","island"], "unknown test function!"
+    assert name in ["square", "jakeman1", "jakeman4", "jakeman4s", "jakeman4i", "jakeman41", "jakeman41s","island"], "unknown test function!"
     if name == "square":
         X = np.linspace(0,1,n_samples)
         y = np.zeros(X.shape)
@@ -104,7 +100,7 @@ def test_func_lineX(name, n_samples):
         X1 = X2 = np.linspace(0,1,n_samples)
         y = 1./(np.abs(0.3-np.square(X1)-np.square(X2))+0.1)
         X = np.c_[X1.ravel(),X2.ravel()]
-    elif name == "jakeman4" or name == "jakeman4_ungridded":
+    elif name == "jakeman4" or name == "jakeman4s":
         X2 = np.linspace(0,1,n_samples)
         X1 = 0.1*np.ones(n_samples)
         y = np.exp(0.5*X1+3*X2)
