@@ -1,13 +1,14 @@
 import sys
 import numpy as np
 from node import node
+from sklearn.preprocessing import PolynomialFeatures
 
-def make_quadratic(X):
+def make_polynomial_features(X,order):
     assert isinstance(X, np.ndarray), "X must be a numpy ndarray!"
-    n = X.shape[1]
-    for p in range(0,n):
-        for q in range(p,n):
-            X = np.c_[ X, X[:,p]*X[:,q] ]
+
+    poly = PolynomialFeatures(order)
+    X = poly.fit_transform(X)
+    X = X[:,1:] # remove the first column, only 1
     return X
 
 class linxgb:
