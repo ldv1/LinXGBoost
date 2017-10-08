@@ -1,6 +1,6 @@
 import numpy as np
 import xgboost as xgb
-from linxgb import linxgb, make_quadratic
+from linxgb import linxgb, make_polynomial_features
 from metrics import *
 from test_func import *
 from test_plot import *
@@ -13,12 +13,12 @@ s2 = 0.05
 
 # Training set
 train_X, train_Y = test_func(reg_func, n_samples=201, var=s2)
-train_X = make_quadratic(train_X)
+train_X = make_polynomial_features(train_X,2)
 dtrain = xgb.DMatrix(train_X, label=train_Y)
 
 # Testing set
 test_X, test_Y = test_func(reg_func, n_samples=5000)
-test_X = make_quadratic(test_X)
+test_X = make_polynomial_features(test_X,2)
 dtest = xgb.DMatrix(test_X)
 
 # Common parameters, XGBoost 2 and LinXGBoost
