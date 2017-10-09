@@ -4,6 +4,18 @@ from node import node
 from sklearn.preprocessing import PolynomialFeatures
 
 def make_polynomial_features(X,order):
+    """Add polynomial features to a design matrix.
+
+    Users must explicitly add polynomial features if they wish to use
+    higher-order models at the leaves (e.g. quadratic, cubic).
+    Example usage:
+    \code{.cpp}
+    reg = linxgb(n_estimators=5)
+    reg.fit(make_polynomial_features(X_train,order=2),y_train)
+    y_pred = reg.fit(make_polynomial_features(X_test,order=2))
+    \endcode
+    """
+
     assert isinstance(X, np.ndarray), "X must be a numpy ndarray!"
 
     poly = PolynomialFeatures(order)
@@ -12,6 +24,19 @@ def make_polynomial_features(X,order):
     return X
 
 class linxgb:
+    """Define a LinXGBoost regressor.
+
+    It basically holds a list of trees.
+    Following the philosophy of <a href="http://scikit-learn.org/">sklearn</a>,
+    two functions are exposed: fit() and predict().
+    Example usage:
+    \code{.cpp}
+    reg = linxgb(n_estimators=5,lbda=0.,min_samples_leaf=3)
+    reg.fit(X_train,y_train)
+    y_pred = reg.fit(X_test)
+    \endcode
+    """
+
     def __init__(self, loss_func="square_loss", n_estimators=5,
                  min_samples_split=3, min_samples_leaf=2, max_depth=6,
                  max_samples_linear_model=sys.maxsize,
