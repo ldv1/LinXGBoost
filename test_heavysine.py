@@ -90,4 +90,4 @@ test_plot3a(reg_func, train_X, train_Y, test_X, test_Y,
             pred1_Y=xgb1_pred_Y, pred1_name="XGBoost",
             pred2_Y=xgb2_pred_Y, pred2_name="XGBoost",
             pred3_Y=lin_pred_Y,  pred3_name="LinXGBoost",
-            fontsize=36, savefig=True)
+            fontsize=16, savefig=True) # 36 for paper
