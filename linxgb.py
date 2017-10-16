@@ -99,6 +99,17 @@ class linxgb:
                              "was %r" % self.gamma)
 
     def _predict(self, X):
+        """Make predictions.
+
+        This function is for internal use only.
+        Users must call linxgb.predict().
+        Why? At each stage, we add a new tree. To build this new tree, we need
+        the predictions done the model made up of all trees built so far. The
+        predictions of each tree is down-weighted by the learning rate.
+        If the user calls this function once the full model is available,
+        the last tree will also be down-weighted, which is non-sense.
+        """
+
         n = X.shape[0]
         y = np.zeros(n, dtype=float)
         for tree in self.trees:
@@ -107,6 +118,9 @@ class linxgb:
         return y
 
     def predict(self, X):
+        """Make predictions.
+        """
+
         n = X.shape[0]
         y = np.zeros(n, dtype=float)
         if not self.trees:
@@ -118,9 +132,20 @@ class linxgb:
         return y
 
     def loss(self, y, y_hat):
+        """Return the squared loss wo/ penalty / regularization.
+        """
+
         return np.sum(np.square(y_hat-y))
 
     def dloss(self, X, y, y_hat):
+        """Return the first and second-order derivative of the squared loss
+        w.r.t. its second argument evaluated at \f$(y, \hat{y}^{(t-1)})\f$.
+
+        When we build a new tree, we need information about the predictions
+        done by the model made up of all past trees we have built so far.
+        linxgb.dloss() contains this information in a special form.
+        """
+
         n = len(y)
         return 2*(y_hat-y), 2*np.ones(n, dtype=float)
 
@@ -137,6 +162,16 @@ class linxgb:
         return self.loss(y,y_hat)+self.regularization()
 
     def build_tree(self, tree, X, g, h):
+        """Recursively build a tree.
+
+        The first tree we pass is a leaf: node(verbose=self.verbose).
+        Then for that leaf, we build the linear model.
+        Thereafter, we investigate where to best slit the leaf.
+        If a best split is found, and if the split is allowed, then a left child
+        and a right child are created, and linxgb.build_tree() is called
+        for the left child and the right child.
+        """
+
         assert tree.left == None, "the node must be a leaf!"
 
         n, d = X.shape
