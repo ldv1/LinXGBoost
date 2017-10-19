@@ -150,6 +150,13 @@ class linxgb:
         return 2*(y_hat-y), 2*np.ones(n, dtype=float)
 
     def regularization(self):
+        """Return the penalty for all trees built so far.
+
+        \f$\gamma\f$ penalizes the number of leaves and
+        \f$\lambda\f$ penalizes the coefficients of the models at the leaves
+        (except the intercept).
+        """
+
         reg = 0.
         for tree in self.trees:
             reg += tree.regularization(gamma=self.gamma, lbda=self.lbda)
@@ -218,6 +225,9 @@ class linxgb:
         return tree
 
     def fit(self, X, y):
+        """Fit the model by building all trees
+        """
+
         if y.ndim != 1:
             print( "lingxb.fit() is expecting a 1D array!" )
             y = y.ravel()
@@ -266,6 +276,13 @@ class linxgb:
                 break
 
     def prune_tree_type_1(self, tree):
+        """Prune a tree.
+
+        Pruning is done as in XGBoost.
+        This type of pruning is not used
+        since linxgb.prune_tree_type_2() yields much better results.
+        """
+
         num_pruning = 0
 
         if not tree.is_leaf():
@@ -284,6 +301,24 @@ class linxgb:
         return num_pruning
 
     def prune_tree_type_2(self, tree):
+        """Prune a tree.
+
+        In XGBoost, a tree is grown until the maximum depth is reached.
+        Then nodes with a negative gain are pruned out in a bottom-up fashion.
+        Why do we accept negative gains?
+        In the middle of the tree construction,
+        the gain might be negative, but then the following gains might be significant.
+        This is reminiscent of the exploitation vs. exploration
+        in many disciplines, e.g. Reinforcement Learning:
+        The best long-term strategy may involve short-term sacrifices.
+        However, all sacrifices are unlikely to be worth it.
+        Thus, in LinXGBoost, we investigate all subtrees
+        starting from nodes with a negative gain
+        in a top-to-bottom fashion
+        and the subtrees that do not lead to a decrease of the objective
+        are pruned out.
+        """
+
         num_pruning = 0
 
         if not tree.is_leaf():
