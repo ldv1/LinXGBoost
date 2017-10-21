@@ -18,7 +18,7 @@ If you intend to run the tests, then
 and [pandas](http://pandas.pydata.org/) must be installed.
 
 ## Code
-The class `linxgb` is, without surprise defined, in `linxgb.py`.
+The class `linxgb` is, without surprise, defined in `linxgb.py`.
 It is the counterpart of `xgb.XGBRegressor`: XGBoost for regression using a sklearn-like API (see [Scikit-Learn API](http://xgboost.readthedocs.io/en/latest/python/python_api.html#module-xgboost.sklearn)). As such, it implements two methods: `fit`
 and `predict`. Consequently, you can use sklearn for cross-validation.
 
