@@ -41,6 +41,10 @@ pred_Y = reg.predict(test_X)
 ## Parameters
 Most significant parameters comply with
 [XGBoost parameter](http://xgboost.readthedocs.io/en/latest/python/python_api.html#module-xgboost.sklearn) definition. They are:
+* objective [default="reg:linear"]
+  - The objective to minimize.
+  - It is either "reg:linear" for regression or "binary:logistic"
+  for binary classification.
 * n_estimators [default=5]
   - Number of trees to fit.
   - range: [1,+∞]
