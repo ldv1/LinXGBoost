@@ -93,7 +93,7 @@ class node:
         n, d = X.shape
         self.gain = float("-inf")
         for f in range(0,d): # split feature
-            var = np.sort(np.unique(X[:,f]))
+            var = np.unique(X[:,f])
             mid_var = [ (x+y)/2. for x,y in zip(var[::],var[1::]) ]
             for pos in range(0,len(mid_var)): # split value
                 c = ( X[:,f] < mid_var[pos] )
