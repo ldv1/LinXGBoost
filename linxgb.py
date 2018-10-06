@@ -37,7 +37,7 @@ class linxgb:
     \endcode
     """
 
-    def __init__(self, loss_func="square_loss", n_estimators=5,
+    def __init__(self, objective="reg:linear", n_estimators=5,
                  min_samples_split=3, min_samples_leaf=2, max_depth=6,
                  max_samples_linear_model=sys.maxsize,
                  subsample=1.0,
@@ -46,7 +46,17 @@ class linxgb:
                  random_state=None,
                  verbose=0, nthread=1):
 
-        self.loss_func = loss_func
+        self.loss_func = objective
+        if objective == "reg:linear":
+            self.loss_func = self.squareloss
+            self.dloss_func = self.dsquareloss
+            self.ddloss_func = self.ddsquareloss
+        elif objective == "binary:logistic":
+            self.loss_func = self.logisticloss
+            self.dloss_func = self.dlogisticloss
+            self.ddloss_func = self.ddlogisticloss
+        else:
+            raise ValueError("unknown objective")
         self.n_estimators = n_estimators
         self.min_samples_split = min_samples_split
         self.min_samples_leaf = min_samples_leaf
@@ -131,13 +141,13 @@ class linxgb:
 
         return y
 
-    def loss(self, y, y_hat):
+    def squareloss(self, y, y_hat):
         """Return the squared loss wo/ penalty / regularization.
         """
 
         return np.sum(np.square(y_hat-y))
 
-    def dloss(self, X, y, y_hat):
+    def dsquareloss(self, X, y, y_hat):
         """Return the first and second-order derivative of the squared loss
         w.r.t. its second argument evaluated at \f$(y, \hat{y}^{(t-1)})\f$.
 
@@ -146,9 +156,53 @@ class linxgb:
         linxgb.dloss() contains this information in a special form.
         """
 
-        n = len(y)
-        return 2*(y_hat-y), 2*np.ones(n, dtype=float)
+        return 2*(y_hat-y)
+    
+    def ddsquareloss(self, X, y, y_hat):
+        """Return the first and second-order derivative of the squared loss
+        w.r.t. its second argument evaluated at \f$(y, \hat{y}^{(t-1)})\f$.
 
+        When we build a new tree, we need information about the predictions
+        done by the model made up of all past trees we have built so far.
+        linxgb.dloss() contains this information in a special form.
+        """
+        
+        n = len(y)
+        return 2*np.ones(n, dtype=float)
+    
+    def logisticloss(self, y, y_hat):
+        """Return the first and second-order derivative of the logistic loss
+        w.r.t. its second argument evaluated at \f$(y, \hat{y}^{(t-1)})\f$.
+
+        When we build a new tree, we need information about the predictions
+        done by the model made up of all past trees we have built so far.
+        linxgb.dloss() contains this information in a special form.
+        """
+        
+        return np.sum(y*np.log(1.+np.exp(-y_hat)) + (1.-y)*np.log(1.+np.exp(y_hat)))
+        
+    def dlogisticloss(self, X, y, y_hat):
+        """Return the first and second-order derivative of the logistic loss
+        w.r.t. its second argument evaluated at \f$(y, \hat{y}^{(t-1)})\f$.
+        
+        When we build a new tree, we need information about the predictions
+        done by the model made up of all past trees we have built so far.
+        linxgb.dloss() contains this information in a special form.
+        """
+        
+        return -( (y-1.)*np.exp(y_hat)+y)/(np.exp(y_hat)+1.)
+        
+    def ddlogisticloss(self, X, y, y_hat):
+        """Return the first and second-order derivative of the logistic loss
+        w.r.t. its second argument evaluated at \f$(y, \hat{y}^{(t-1)})\f$.
+
+        When we build a new tree, we need information about the predictions
+        done by the model made up of all past trees we have built so far.
+        linxgb.dloss() contains this information in a special form.
+        """
+        
+        return np.exp(y_hat)/np.square(np.exp(y_hat)+1.)
+        
     def regularization(self):
         """Return the penalty for all trees built so far.
 
@@ -166,7 +220,7 @@ class linxgb:
     def objective(self,X, y, y_hat=None):
         if y_hat is None:
             y_hat = self._predict(X)
-        return self.loss(y,y_hat)+self.regularization()
+        return self.loss_func(y,y_hat)+self.regularization()
 
     def build_tree(self, tree, X, g, h):
         """Recursively build a tree.
@@ -246,7 +300,8 @@ class linxgb:
             batch_size = int(np.rint(self.subsample*n))
             indices = np.random.choice(n, batch_size, replace=False)
             y_hat = self._predict(X[indices,:])
-            g, h = self.dloss(X[indices,:],y[indices],y_hat)
+            g = self.dloss_func(X[indices,:],y[indices],y_hat)
+            h = self.ddloss_func(X[indices,:],y[indices],y_hat)
             if self.verbose > 0:
                 print( "building tree {}, total obj={}".format(t+1,np.sum(self.tree_objs)) )
             tree = self.build_tree( node(verbose=self.verbose), X[indices,:], g, h )
