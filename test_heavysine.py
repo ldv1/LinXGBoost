@@ -38,7 +38,7 @@ param = {'booster': 'gbtree', # gbtree, gblinear
          #'save_period': 0, # 0 means do not save any model except the final round model
          #'nthread': 1,
          #'subsample': subsample,
-         'objective': 'reg:linear' # binary:logistic, reg:linear
+         'objective': 'reg:squarederror' # binary:logistic, reg:squarederror
          # 'eval_metric': the evaluation metric
          }
 num_round = 50 # the number of round to do boosting, the number of trees
@@ -55,7 +55,7 @@ param = {'booster': 'gbtree', # gbtree, gblinear
          'save_period': 0, # 0 means do not save any model except the final round model
          'nthread': 1,
          'subsample': subsample,
-         'objective': 'reg:linear' # binary:logistic, reg:linear
+         'objective': 'reg:squarederror' # binary:logistic, reg:squarederror
          # 'eval_metric': the evaluation metric
          }
 num_round = num_trees # the number of round to do boosting, the number of trees

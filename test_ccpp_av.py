@@ -35,7 +35,7 @@ def compute(train_X,train_Y,test_X,test_Y):
                    "subsample": np.linspace(0.7,0.9,3), # 0.6
                    "gamma": [ 0.03, 0.1, 0.3 ] # 0.1
                   }
-    grid_cv = GridSearchCV(xgb.XGBRegressor(objective='reg:linear', reg_lambda=0., nthread=1), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
+    grid_cv = GridSearchCV(xgb.XGBRegressor(objective='reg:squarederror', reg_lambda=0., nthread=1), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
     grid_cv.fit(train_X, train_Y)
     #reg = grid_cv.best_estimator_
     #reg.fit(train_X, train_Y)

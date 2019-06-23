@@ -42,7 +42,7 @@ min_samples_leaf = 6
 # XGBoost 1 (defaults with 50 trees) training
 param = {'booster': 'gbtree', # gbtree, gblinear
          'eta': 0.1, # step size shrinkage
-         'objective': 'binary:logistic' # binary:logistic, reg:linear
+         'objective': 'binary:logistic' # binary:logistic, reg:squarederror
          }
 num_round = 50 # the number of round to do boosting, the number of trees
 bst1 = xgb.train(param, dtrain, num_round)
@@ -58,7 +58,7 @@ param = {'booster': 'gbtree', # gbtree, gblinear
          'save_period': 0, # 0 means do not save any model except the final round model
          'nthread': 1,
          'subsample': subsample,
-         'objective': 'binary:logistic' # binary:logistic, reg:linear
+         'objective': 'binary:logistic' # binary:logistic, reg:squarederror
          # 'eval_metric': the evaluation metric
          }
 num_round = num_trees # the number of round to do boosting, the number of trees
