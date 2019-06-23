@@ -37,7 +37,7 @@ class linxgb:
     \endcode
     """
 
-    def __init__(self, objective="reg:linear", n_estimators=5,
+    def __init__(self, loss_function="reg:squarederror", n_estimators=5,
                  min_samples_split=3, min_samples_leaf=2, max_depth=6,
                  max_samples_linear_model=sys.maxsize,
                  subsample=1.0,
@@ -46,17 +46,7 @@ class linxgb:
                  random_state=None,
                  verbose=0, nthread=1):
 
-        self.loss_func = objective
-        if objective == "reg:linear":
-            self.loss_func = self.squareloss
-            self.dloss_func = self.dsquareloss
-            self.ddloss_func = self.ddsquareloss
-        elif objective == "binary:logistic":
-            self.loss_func = self.logisticloss
-            self.dloss_func = self.dlogisticloss
-            self.ddloss_func = self.ddlogisticloss
-        else:
-            raise ValueError("unknown objective")
+        self.loss_function = loss_function
         self.n_estimators = n_estimators
         self.min_samples_split = min_samples_split
         self.min_samples_leaf = min_samples_leaf
@@ -281,7 +271,21 @@ class linxgb:
     def fit(self, X, y):
         """Fit the model by building all trees
         """
-
+        
+        if self.loss_function == "reg:linear":
+            print("reg:linear will be deprecated; use reg:squarederror instead")
+            self.loss_function = "reg:squarederror"
+        if self.loss_function == "reg:squarederror":
+            self.loss_func = self.squareloss
+            self.dloss_func = self.dsquareloss
+            self.ddloss_func = self.ddsquareloss
+        elif self.loss_function == "binary:logistic":
+            self.loss_func = self.logisticloss
+            self.dloss_func = self.dlogisticloss
+            self.ddloss_func = self.ddlogisticloss
+        else:
+            raise ValueError("unknown error function")
+        
         if y.ndim != 1:
             print( "lingxb.fit() is expecting a 1D array!" )
             y = y.ravel()
@@ -329,7 +333,9 @@ class linxgb:
                 del self.trees[-1]
                 del self.tree_objs[-1]
                 break
-
+        
+        return self
+        
     def prune_tree_type_1(self, tree):
         """Prune a tree.
 
