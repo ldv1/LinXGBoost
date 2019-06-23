@@ -36,7 +36,7 @@ def compute(train_X,train_Y,test_X,test_Y):
                    "subsample": np.linspace(0.7,1,4), # 1, 0.9
                    "gamma": [ 0.1, 0.3, 1 ] # 0.1, 0.3
                   }
-    grid_cv = GridSearchCV(xgb.XGBRegressor(objective='reg:squarederror', reg_lambda=0., nthread=1), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
+    grid_cv = GridSearchCV(xgb.XGBRegressor(objective='reg:squarederror', reg_lambda=0., nthread=1), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, iid=True, n_jobs=-1)
     grid_cv.fit(train_X, train_Y)
     reg = grid_cv.best_estimator_
     reg.fit(train_X, train_Y)
@@ -49,7 +49,7 @@ def compute(train_X,train_Y,test_X,test_Y):
                    "lbda": np.logspace(-7,-1,num=4),
                    "min_samples_leaf": [3,4,8,16],
                   }
-    grid_cv = GridSearchCV(linxgb(max_depth=200), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
+    grid_cv = GridSearchCV(linxgb(max_depth=200), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, iid=True, n_jobs=-1)
     grid_cv.fit(train_X, train_Y)
     reg = grid_cv.best_estimator_
     reg.fit(train_X, train_Y)
@@ -61,7 +61,7 @@ def compute(train_X,train_Y,test_X,test_Y):
                    "min_samples_split": np.arange(2,5), # 2, 5
                    "max_depth": np.arange(2,13,2), # 16, 6
                   }
-    grid_cv = GridSearchCV(RandomForestRegressor(random_state=1), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
+    grid_cv = GridSearchCV(RandomForestRegressor(random_state=1), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, iid=True, n_jobs=-1)
     grid_cv.fit(train_X, train_Y)
     reg = grid_cv.best_estimator_
     reg.fit(train_X, train_Y)
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     rf_perf = []
 
     for k in range(0,20):
-        print "starting {}-th iteration".format(k+1)
+        print("starting {}-th iteration".format(k+1))
 
         np.random.seed(k)
 
@@ -106,10 +106,10 @@ if __name__ == '__main__':
         rf_perf.append(rf_nmse)
 
         # print perf
-        print "NMSE: XGBoost {:12.5f} LinXGBoost {:12.5f} Random Forests {:12.5f}". \
-               format(xgb_nmse,lin_nmse,rf_nmse)
+        print("NMSE: XGBoost {:12.5f} LinXGBoost {:12.5f} Random Forests {:12.5f}". \
+               format(xgb_nmse,lin_nmse,rf_nmse))
 
     # Print stats
-    print "XGBoost       : {:12.5f} +/- {:12.5f}".format(np.mean(xgb_perf),np.std(xgb_perf,ddof=1))
-    print "LinXGBoost    : {:12.5f} +/- {:12.5f}".format(np.mean(lin_perf),np.std(lin_perf,ddof=1))
-    print "Random Forests: {:12.5f} +/- {:12.5f}".format(np.mean(rf_perf),np.std(rf_perf,ddof=1))
+    print("XGBoost       : {:12.5f} +/- {:12.5f}".format(np.mean(xgb_perf),np.std(xgb_perf,ddof=1)))
+    print("LinXGBoost    : {:12.5f} +/- {:12.5f}".format(np.mean(lin_perf),np.std(lin_perf,ddof=1)))
+    print("Random Forests: {:12.5f} +/- {:12.5f}".format(np.mean(rf_perf),np.std(rf_perf,ddof=1)))
