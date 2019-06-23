@@ -37,7 +37,7 @@ class linxgb:
     \endcode
     """
 
-    def __init__(self, objective="reg:squarederror", n_estimators=5,
+    def __init__(self, loss_function="reg:squarederror", n_estimators=5,
                  min_samples_split=3, min_samples_leaf=2, max_depth=6,
                  max_samples_linear_model=sys.maxsize,
                  subsample=1.0,
@@ -46,7 +46,7 @@ class linxgb:
                  random_state=None,
                  verbose=0, nthread=1):
 
-        self.loss_function = objective
+        self.loss_function = loss_function
         self.n_estimators = n_estimators
         self.min_samples_split = min_samples_split
         self.min_samples_leaf = min_samples_leaf

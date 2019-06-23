@@ -65,7 +65,7 @@ num_round = num_trees # the number of round to do boosting, the number of trees
 bst2 = xgb.train(param, dtrain, num_round)
 
 # LinXGBoost
-linbst = linxgb(objective="binary:logistic",
+linbst = linxgb(loss_function="binary:logistic",
                 n_estimators=num_trees,
                 learning_rate=learning_rate,
                 min_samples_leaf=min_samples_leaf,
