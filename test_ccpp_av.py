@@ -35,7 +35,7 @@ def compute(train_X,train_Y,test_X,test_Y):
                    "subsample": np.linspace(0.7,0.9,3), # 0.6
                    "gamma": [ 0.03, 0.1, 0.3 ] # 0.1
                   }
-    grid_cv = GridSearchCV(xgb.XGBRegressor(objective='reg:squarederror', reg_lambda=0., nthread=1), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
+    grid_cv = GridSearchCV(xgb.XGBRegressor(objective='reg:squarederror', reg_lambda=0., nthread=1), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, iid=True, n_jobs=-1)
     grid_cv.fit(train_X, train_Y)
     #reg = grid_cv.best_estimator_
     #reg.fit(train_X, train_Y)
@@ -47,7 +47,7 @@ def compute(train_X,train_Y,test_X,test_Y):
                    #"lbda": np.logspace(-11,-4,num=2),
                    "min_samples_leaf": [32,48],
                   }
-    grid_cv = GridSearchCV(linxgb(max_depth=200,n_estimators=4,learning_rate=1.0,lbda=1e-11), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
+    grid_cv = GridSearchCV(linxgb(max_depth=200,n_estimators=4,learning_rate=1.0,lbda=1e-11), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, iid=True, n_jobs=-1)
     grid_cv.fit(train_X, train_Y)
     #reg = grid_cv.best_estimator_
     #reg.fit(train_X, train_Y)
@@ -59,7 +59,7 @@ def compute(train_X,train_Y,test_X,test_Y):
                    "min_samples_split": np.arange(2,5), # 4 or 3
                    "max_depth": np.arange(16,29,2), # 24
                   }
-    grid_cv = GridSearchCV(RandomForestRegressor(random_state=1), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, n_jobs=-1)
+    grid_cv = GridSearchCV(RandomForestRegressor(random_state=1), param_grid, scoring='neg_mean_squared_error', cv=cv_sets, iid=True, n_jobs=-1)
     grid_cv.fit(train_X, train_Y)
     #reg = grid_cv.best_estimator_
     #reg.fit(train_X, train_Y)
