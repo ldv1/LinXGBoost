@@ -19,7 +19,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
 import numpy as np
 import xgboost as xgb
-from linxgb import linxgb, make_quadratic
+from linxgb import linxgb, make_polynomial_features
 from metrics import *
 from test_func import *
 from test_plot import *
