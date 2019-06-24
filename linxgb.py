@@ -128,7 +128,12 @@ class linxgb:
         for t in range(len(self.trees)-1):
             y += self.learning_rate*self.trees[t].predict(X)
         y += self.trees[-1].predict(X)
-
+        
+        # in binary classification, outputs >0 are labeled 1, 0 otherwise
+        if self.loss_function == "binary:logistic":
+            y[ y<=0 ] = 0
+            y[ y>0 ] = 1
+        
         return y
 
     def squareloss(self, y, y_hat):
@@ -138,57 +143,36 @@ class linxgb:
         return np.sum(np.square(y_hat-y))
 
     def dsquareloss(self, X, y, y_hat):
-        """Return the first and second-order derivative of the squared loss
+        """Return the first-order derivative of the squared loss
         w.r.t. its second argument evaluated at \f$(y, \hat{y}^{(t-1)})\f$.
-
-        When we build a new tree, we need information about the predictions
-        done by the model made up of all past trees we have built so far.
-        linxgb.dloss() contains this information in a special form.
         """
 
         return 2*(y_hat-y)
     
     def ddsquareloss(self, X, y, y_hat):
-        """Return the first and second-order derivative of the squared loss
+        """Return the second-order derivative of the squared loss
         w.r.t. its second argument evaluated at \f$(y, \hat{y}^{(t-1)})\f$.
-
-        When we build a new tree, we need information about the predictions
-        done by the model made up of all past trees we have built so far.
-        linxgb.dloss() contains this information in a special form.
         """
         
         n = len(y)
         return 2*np.ones(n, dtype=float)
     
     def logisticloss(self, y, y_hat):
-        """Return the first and second-order derivative of the logistic loss
-        w.r.t. its second argument evaluated at \f$(y, \hat{y}^{(t-1)})\f$.
-
-        When we build a new tree, we need information about the predictions
-        done by the model made up of all past trees we have built so far.
-        linxgb.dloss() contains this information in a special form.
+        """Return the logisitc loss wo/ penalty / regularization.
         """
         
         return np.sum(y*np.log(1.+np.exp(-y_hat)) + (1.-y)*np.log(1.+np.exp(y_hat)))
         
     def dlogisticloss(self, X, y, y_hat):
-        """Return the first and second-order derivative of the logistic loss
+        """Return the first-order derivative of the logistic loss
         w.r.t. its second argument evaluated at \f$(y, \hat{y}^{(t-1)})\f$.
-        
-        When we build a new tree, we need information about the predictions
-        done by the model made up of all past trees we have built so far.
-        linxgb.dloss() contains this information in a special form.
         """
         
         return -( (y-1.)*np.exp(y_hat)+y)/(np.exp(y_hat)+1.)
         
     def ddlogisticloss(self, X, y, y_hat):
-        """Return the first and second-order derivative of the logistic loss
+        """Return the second-order derivative of the logistic loss
         w.r.t. its second argument evaluated at \f$(y, \hat{y}^{(t-1)})\f$.
-
-        When we build a new tree, we need information about the predictions
-        done by the model made up of all past trees we have built so far.
-        linxgb.dloss() contains this information in a special form.
         """
         
         return np.exp(y_hat)/np.square(np.exp(y_hat)+1.)
